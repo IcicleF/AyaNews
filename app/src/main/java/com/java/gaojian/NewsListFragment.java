@@ -26,31 +26,14 @@ import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 public class NewsListFragment extends Fragment {
 
-    public static final int LoadMoreThreshold = 10;
-    public static final int RefreshDelayTime = 500;
-    private static final int ByteBufferSize = 1024;
+    public static final int LOAD_MORE_THRESHOLD = 10;
+    public static final int REFRESH_DELAY_TIME = 500;
+    public static final int BYTE_BUFFER_SIZE = 1024;
 
     private MainActivity mainAc;
 
@@ -139,8 +122,6 @@ public class NewsListFragment extends Fragment {
                 return;
             AyaNewsEntry entry = (AyaNewsEntry) tag;
 
-            //Toast.makeText(getContext(), "?????!", Toast.LENGTH_SHORT).show();
-
             Intent intent = new Intent(mainAc, ShowHTMLActivity.class);
             intent.putExtra("uid", entry.uid);
             intent.putExtra("isCalledFromFavorites", false);
@@ -150,10 +131,10 @@ public class NewsListFragment extends Fragment {
         @Override
         public void onItemLongClick(View view) {
             Object tag = view.getTag();
-            if (tag == null || !(tag instanceof String))
+            if (tag == null || !(tag instanceof AyaNewsEntry))
                 return;
-            String uid = (String) tag;
-            Toast.makeText(mainAc, "Long click: " + uid, Toast.LENGTH_SHORT).show();
+            AyaNewsEntry entry = (AyaNewsEntry) tag;
+            Toast.makeText(mainAc, "Long click: " + entry.uid, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -224,12 +205,6 @@ public class NewsListFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        saveNewsList();
-        super.onStop();
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
     }
@@ -245,7 +220,7 @@ public class NewsListFragment extends Fragment {
             return false;
         if (currentFilter.length() == 0)
             return true;
-        if (target.title.toLowerCase().indexOf(currentFilter) == -1)
+        if (target.title.toLowerCase().contains(currentFilter))
             return true;
         return false;
     }
@@ -262,97 +237,12 @@ public class NewsListFragment extends Fragment {
     }
 
     /*
-     * To save the list FOR SURE
-     */
-    public void saveNewsList() {
-        try {
-            Log.d("ayaDeb ", "NewsListFragment.saveNewsList: activated: " + frData.size());
-
-            AyaEnvironment.savePreferences();
-
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.newDocument();
-
-            doc.setXmlStandalone(true);
-            Element root = doc.createElement("newslist");
-            for (AyaNewsEntry entry : frData) {
-                Element entryNode = doc.createElement("entry");
-                entryNode.setAttribute("uid", entry.uid);
-                entryNode.setAttribute("title", entry.title);
-                entryNode.setAttribute("desc", entry.desc);
-                entryNode.setAttribute("pubDate", entry.pubDate);
-                entryNode.setAttribute("url", entry.url);
-                entryNode.setAttribute("source", entry.source);
-                root.appendChild(entryNode);
-            }
-            doc.appendChild(root);
-
-            TransformerFactory trf = TransformerFactory.newInstance();
-            Transformer tr = trf.newTransformer();
-            tr.setOutputProperty(OutputKeys.INDENT, "yes");
-
-            FileOutputStream fos = getContext().openFileOutput("cached_list.xml", Context.MODE_PRIVATE);
-            PrintStream ps = new PrintStream(fos);
-            tr.transform(new DOMSource(doc), new StreamResult(ps));
-            ps.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /*
-     * Must call before any data fetch attempts.
+     * Must be called before any data fetch attempts.
      */
     public void startDatasetRenewal() {
-        FileInputStream fis = null;
-        try {
-            fis = getContext().openFileInput(getResources().getString(R.string.path_news_list));
-
-            XmlPullParserFactory xppf = XmlPullParserFactory.newInstance();
-            XmlPullParser parser = xppf.newPullParser();
-            parser.setInput(fis, "UTF-8");
-
-            int event = parser.getEventType();
-            AyaNewsEntry entry = null;
-            String name;
-            while (event != XmlPullParser.END_DOCUMENT) {
-                String nodeName = parser.getName();
-                switch (event) {
-                    case XmlPullParser.START_DOCUMENT:
-                        break;
-                    case XmlPullParser.START_TAG:
-                        name = parser.getName();
-                        if (name.equals("entry")) {
-                            entry = new AyaNewsEntry();
-                            entry.uid = parser.getAttributeValue(null, "uid");
-                            entry.title = parser.getAttributeValue(null, "title");
-                            entry.pubDate = parser.getAttributeValue(null, "pubDate");
-                            entry.desc = parser.getAttributeValue(null, "desc");
-                            entry.url = parser.getAttributeValue(null, "url");
-                            entry.source = parser.getAttributeValue(null, "source");
-
-                            frData.add(entry);
-                        }
-                        break;
-                    case XmlPullParser.END_TAG:
-                        break;
-                    default:
-                        break;
-                }
-                event = parser.next();
-            }
-            this.setFilter("");
-            this.loadMoreData();
-        }
-        catch (FileNotFoundException e) {
-            Log.d("ayaDeb", "NewsListFragment.startDatasetRenewal: seems like first run");
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        AyaEnvironment.loadNewsList(getContext());
+        setFilter("");
+        loadMoreData();
         mainAc.refetchRSS(true);
     }
 
@@ -374,7 +264,7 @@ public class NewsListFragment extends Fragment {
         if (frData.isEmpty()) {
             renewDataset(dataset);
             if (frSwipeRefresher.getState() == RefreshState.Refreshing)
-                frSwipeRefresher.finishRefresh(RefreshDelayTime);
+                frSwipeRefresher.finishRefresh(REFRESH_DELAY_TIME);
             return;
         }
         if (dataset != null) {
@@ -418,8 +308,8 @@ public class NewsListFragment extends Fragment {
             return;
         }
         int remainingItems = frFilteredData.size() - loadedItems;
-        if (remainingItems > LoadMoreThreshold)
-            remainingItems = LoadMoreThreshold;
+        if (remainingItems > LOAD_MORE_THRESHOLD)
+            remainingItems = LOAD_MORE_THRESHOLD;
 
         for (int i = loadedItems; i < loadedItems + remainingItems; ++i)
             frShownData.add(frFilteredData.get(i));
@@ -427,6 +317,6 @@ public class NewsListFragment extends Fragment {
 
         frAdapter.notifyDataSetChanged();
         if (frSwipeRefresher.getState() == RefreshState.Loading)
-            frSwipeRefresher.finishLoadMore(RefreshDelayTime);
+            frSwipeRefresher.finishLoadMore(REFRESH_DELAY_TIME);
     }
 }

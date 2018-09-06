@@ -19,7 +19,9 @@ class AyaNewsEntry implements Comparable<AyaNewsEntry> {
 
     @Override
     public int compareTo(@NonNull AyaNewsEntry o) {
-        return o.pubDate.compareTo(this.pubDate);
+        if (!(o.pubDate.equals(this.pubDate)))
+            return o.pubDate.compareTo(this.pubDate);
+        return this.title.compareTo(o.title);
     }
 
     /*

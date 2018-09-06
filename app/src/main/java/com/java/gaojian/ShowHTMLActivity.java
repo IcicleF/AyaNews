@@ -25,6 +25,9 @@ public class ShowHTMLActivity extends AppCompatActivity {
     private WebView mWebView;
     private LoadingIndicator loadingIndicator;
 
+    private AyaNewsEntry entry;
+    private boolean isCalledFromFavoirtes;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +38,8 @@ public class ShowHTMLActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             String uid = intent.getStringExtra("uid");
-            AyaNewsEntry entry = AyaEnvironment.findEntry(uid);
+            isCalledFromFavoirtes = intent.getBooleanExtra("isCalledFromFavorites", false);
+            entry = AyaEnvironment.findEntry(uid);
             if (entry != null)
                 url = entry.url;
         }
@@ -113,19 +117,37 @@ public class ShowHTMLActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.show_html_righttop_menu, menu);
+        super.onCreateOptionsMenu(menu);
+
+        MenuItem fav;
+        if (isCalledFromFavoirtes)
+            fav = menu.add(R.string.title_remove_from_favorites);
+        else
+            fav = menu.add(R.string.title_add_to_favorites);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.show_html_add_to_favorite:
-
-                return true;
-            default:
-                return false;
+        String title = item.getTitle().toString();
+        if (isCalledFromFavoirtes) {
+            boolean succ = AyaEnvironment.removeFromFavorites(entry);
+            if (succ) {
+                setResult(FavoriteListActivity.REQUEST_SHOW_HTML_SUCCRET);
+                finish();
+            }
+            else
+                Toast.makeText(this, R.string.err_fav_remove_failure, Toast.LENGTH_SHORT).show();
         }
+        else {
+            boolean succ = AyaEnvironment.addToFavorites(entry);
+            Toast.makeText(this,
+                    (succ ? R.string.info_succ_fav : R.string.warn_existed_fav),
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -31,7 +31,7 @@ public class RSSListActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull AyaRssListAdapter.AyaRVHolder holder, int i) {
             AyaEnvironment.RssFeed rss = AyaEnvironment.rssFeedList.get(i);
             holder.bind(rss);
-            holder.itemView.setTag(new Integer(i));
+            holder.itemView.setTag(Integer.valueOf(i));
         }
 
         @Override
@@ -74,7 +74,7 @@ public class RSSListActivity extends AppCompatActivity {
 
         this.setTitle(getResources().getString(R.string.title_channels));
 
-        Log.d("ayaDeb", "RSSListActivity.onCreate " + AyaEnvironment.rssFeedList.size());
+        //Log.d("ayaDeb", "RSSListActivity.onCreate " + AyaEnvironment.rssFeedList.size());
 
         mRssList = (RecyclerView) findViewById(R.id.rss_list);
         mRssList.setAdapter(mAdapter = new AyaRssListAdapter());

@@ -30,6 +30,15 @@ public class MySpaceFragment extends Fragment {
         if (view == null) {
             view = inflater.inflate(R.layout.my_space_list, container, false);
 
+            TextView tvFavs = (TextView) view.findViewById(R.id.myspace_favorites);
+            tvFavs.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mainAc, FavoriteListActivity.class);
+                    startActivity(intent);
+                }
+            });
+
             TextView tvChannels = (TextView) view.findViewById(R.id.myspace_channels);
             tvChannels.setOnClickListener(new View.OnClickListener() {
                 @Override

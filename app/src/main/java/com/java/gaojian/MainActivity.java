@@ -1,6 +1,5 @@
 package com.java.gaojian;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -80,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (opcode != 0)
-                Toast.makeText(MainActivity.this, getResources().getString(R.string.err_unexpected), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.err_unexpected, Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -232,12 +231,26 @@ public class MainActivity extends AppCompatActivity {
         netConn.start();
     }
 
+    class ViewPagetOnPagerChangedLisenter implements ViewPager.OnPageChangeListener {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+
+        @Override
+        public void onPageScrollStateChanged(int state) { }
+
+        @Override
+        public void onPageSelected(int position) {
+            mNavigation.setSelectedItemId(mNavigation.getMenu().getItem(position).getItemId());
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         AyaEnvironment.loadRSSFeedList(this);
+        AyaEnvironment.loadFavorites(this);
 
         this.setTitle(getResources().getString(R.string.title_home));
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
@@ -263,17 +276,12 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setCurrentItem(0);
     }
 
-    class ViewPagetOnPagerChangedLisenter implements ViewPager.OnPageChangeListener {
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
-
-        @Override
-        public void onPageScrollStateChanged(int state) { }
-
-        @Override
-        public void onPageSelected(int position) {
-            mNavigation.setSelectedItemId(mNavigation.getMenu().getItem(position).getItemId());
-        }
+    @Override
+    public void onStop() {
+        AyaEnvironment.saveRssPrefs();
+        AyaEnvironment.saveNewsList(this);
+        AyaEnvironment.saveFavorites(this);
+        super.onStop();
     }
 
     public void sendMessage(Message message) {
