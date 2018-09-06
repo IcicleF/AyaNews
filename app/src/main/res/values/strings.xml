@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">高健_News</string>
+    <string name="title_activity_main">AyaNews</string>
+    <string name="title_activity_show_html">Show News</string>
+
+    <string name="title_home">Home</string>
+    <string name="title_recommend">Recommend</string>
+    <string name="title_myspace">My Space</string>
+
+    <string name="title_favorites">Favorites</string>
+    <string name="title_preferences">Preferences</string>
+    <string name="title_channels">News Channels</string>
+    <string name="title_about">About Me</string>
+    <string name="title_clear_news_cache">Clear Cached News Entries</string>
+    <string name="title_clear_webview_cache">Clear Cached Pages</string>
+
+    <string name="title_add_to_favorites">Add to Favorites</string>
+
+    <string name="title_channel_on">ON</string>
+    <string name="title_channel_off">OFF</string>
+
+    <string name="about_text">哎呀~\n\n和堇子小姐聊过之后\n觉得智能手机真是好东西呢！\n\n虽然似乎是很脆弱的器械\n但是据说存在着名为互联网\n比天狗的情报网还要强上数倍的便利机能\n\n用智能手机来拓展文文新闻的业务\n天大的好主意呢！\n\n啊不过\n因为这种器械都是外面的人在用\n所以幻想乡的新闻不能写在上面呢\n\n虽然感觉这样就失掉了什么关键的东西\n但果然是宣传文文的金字招牌更重要吧！</string>
+    <string name="about_project">Project AyaNews</string>
+    <string name="about_author">Copyright &#169; 2018 射命丸·搞个大新·文</string>
+
+    <!-- <string name="notify_no_more">No more news item</string> -->
+
+    <string name="err_no_response">No response</string>
+    <string name="err_retry">Failed, please retry</string>
+    <string name="err_unexpected">Unexpected error</string>
+    <string name="err_no_network">Network unavailable</string>
+    <string name="err_rss_failure">Failed fetching some RSS</string>
+
+    <string name="placeholder">Kirara! Placeholder</string>
+
+    <string name="path_news_list">cached_list.xml</string>
+</resources>

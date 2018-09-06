@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="rss_name_array">
+        <item>Tencent Domestic News</item>
+        <item>Tencent World News</item>
+        <item>Tencent Society News</item>
+
+        <item>Sina Domestic News</item>
+        <item>Sina World News</item>
+        <item>Sina Society News</item>
+        <item>Sina Sports News</item>
+        <item>Sina Tech News</item>
+        <item>Sina Military News</item>
+    </string-array>
+
+    <string-array name="rss_url_array">
+        <item>http://news.qq.com/newsgn/rss_newsgn.xml</item>
+        <item>http://news.qq.com/newsgj/rss_newswj.xml</item>
+        <item>http://news.qq.com/newssh/rss_newssh.xml</item>
+
+        <item>http://rss.sina.com.cn/news/china/focus15.xml</item>
+        <item>http://rss.sina.com.cn/news/world/focus15.xml</item>
+        <item>http://rss.sina.com.cn/news/society/focus15.xml</item>
+        <item>http://rss.sina.com.cn/news/allnews/sports.xml</item>
+        <item>http://rss.sina.com.cn/tech/rollnews.xml</item>
+        <item>http://rss.sina.com.cn/roll/mil/hot_roll.xml</item>
+    </string-array>
+
+    <string-array name="rss_encoding_array">
+        <item>GB2312</item>
+        <item>UTF-8</item>
+        <item>UTF-8</item>
+
+        <item>UTF-8</item>
+        <item>UTF-8</item>
+        <item>UTF-8</item>
+        <item>UTF-8</item>
+        <item>UTF-8</item>
+        <item>UTF-8</item>
+    </string-array>
+</resources>
