@@ -14,8 +14,10 @@
     <string name="title_clear_news_cache">Clear Cached News Entries</string>
     <string name="title_clear_webview_cache">Clear Cached Pages</string>
 
-    <string name="title_add_to_favorites">Add to Favorites</string>
-    <string name="title_remove_from_favorites">Remove from Favorites</string>
+    <string name="title_open_browser">Open with browser</string>
+    <string name="title_share">Share content</string>
+    <string name="title_add_to_favorites">Add to favorites</string>
+    <string name="title_remove_from_favorites">Remove from favorites</string>
 
     <string name="title_channel_on">ON</string>
     <string name="title_channel_off">OFF</string>
@@ -27,10 +29,10 @@
 
     <!-- <string name="notify_no_more">No more news item</string> -->
 
-    <string name="info_succ_fav">Added to Favorites</string>
-    <string name="info_succ_removed_fav">Successfully removed from Favorites</string>
+    <string name="info_succ_fav">Added to favorites</string>
+    <string name="info_succ_removed_fav">Successfully removed from favorites</string>
 
-    <string name="warn_existed_fav">Already in Favorites</string>
+    <string name="warn_existed_fav">Already in favorites</string>
     <string name="warn_no_fav">Favorites list is empty</string>
 
     <string name="err_no_response">No response</string>
@@ -39,6 +41,8 @@
     <string name="err_no_network">Network unavailable</string>
     <string name="err_rss_failure">Failed fetching some RSS</string>
     <string name="err_fav_remove_failure">News entry not in Favorites</string>
+    <string name="err_cannot_save_img">Cannot save image</string>
+    <string name="err_malformed_url">Malformed URL</string>
 
     <string name="placeholder">Kirara! Placeholder</string>
 

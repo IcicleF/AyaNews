@@ -8,8 +8,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class AyaNewsEntry implements Comparable<AyaNewsEntry> {
+
+    private static Pattern sinaPattern = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})/doc-([a-z0-9]{15}).shtml");
+
     public String uid;
     public String title;
     public String pubDate;
@@ -35,8 +40,10 @@ class AyaNewsEntry implements Comparable<AyaNewsEntry> {
         }
         else if (source.contains("Sina")) {
             url = url.substring(url.indexOf('=') + 1);
-            uid = "s" + url.substring(26, 36).replace("-", "")
-                    + url.substring(42, 56);
+
+            Matcher m = sinaPattern.matcher(url);
+            if (m.find())
+                uid = "s" + m.group(1).replace("=", "") + m.group(2);
         }
         else {
             url = "INVALID";

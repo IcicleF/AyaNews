@@ -23,7 +23,7 @@ public class LoadingIndicator extends AlertDialog {
 
     public static LoadingIndicator buildInst(Context context) {
         LoadingIndicator inst = new LoadingIndicator(context, R.style.TransparentDialog);
-        inst.setCancelable(false);
+        inst.setCancelable(true);
         inst.setCanceledOnTouchOutside(false);
         return inst;
     }
