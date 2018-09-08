@@ -1,6 +1,7 @@
 package com.java.gaojian;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.text.ParseException;
@@ -21,6 +22,7 @@ class AyaNewsEntry implements Comparable<AyaNewsEntry> {
     public String desc;
     public String url;
     public String source;
+    public int views;
 
     @Override
     public int compareTo(@NonNull AyaNewsEntry o) {
@@ -79,5 +81,13 @@ class AyaNewsEntry implements Comparable<AyaNewsEntry> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Nullable
+    public String getCategory() {
+        String[] words = source.split("\\s+");
+        if (words.length != 3)
+            return null;
+        return words[1];
     }
 }

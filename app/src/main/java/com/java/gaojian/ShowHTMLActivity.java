@@ -70,10 +70,7 @@ public class ShowHTMLActivity extends AppCompatActivity {
         webSettings.setDomStorageEnabled(true);
         webSettings.setSupportZoom(true);
         webSettings.setBuiltInZoomControls(true);
-        if (AyaEnvironment.isNetworkConnected(this))
-            webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        else
-            webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
         mWebView.loadUrl(url);
 
@@ -99,7 +96,7 @@ public class ShowHTMLActivity extends AppCompatActivity {
                 view.loadUrl("javascript:fucktencent();");
             }
             else {
-                String js = "javascript:function fucksina(){var bar1=document.getElementsByClassName('fl_words rf j_cmnt_bottom');for(var i=0;i<bar1.length;++i){bar1[i].remove();}}";
+                String js = "javascript:function fucksina(){var bar1=document.getElementsByClassName('fl_words rf j_cmnt_bottom');for(var i=0;i<bar1.length;++i){bar1[i].remove();}var bar2=document.getElementsByClassName('specSlide2Wrap');for(var i=0;i<bar2.length;++i){bar2[i].remove();}}";
                 view.loadUrl(js);
                 view.loadUrl("javascript:fucksina();");
             }

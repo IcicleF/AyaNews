@@ -7,7 +7,7 @@
     <TextView
         android:id="@+id/myspace_favorites"
         android:textSize="20sp"
-        android:textColor="@color/pureBlack"
+        android:textColor="@color/colorPureBlack"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:paddingTop="16dp"
@@ -25,7 +25,7 @@
     <TextView
         android:id="@+id/myspace_channels"
         android:textSize="20sp"
-        android:textColor="@color/pureBlack"
+        android:textColor="@color/colorPureBlack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="12dp"
@@ -43,7 +43,7 @@
     <TextView
         android:id="@+id/myspace_preferences"
         android:textSize="20sp"
-        android:textColor="@color/pureBlack"
+        android:textColor="@color/colorPureBlack"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:paddingTop="16dp"
@@ -61,7 +61,7 @@
     <TextView
         android:id="@+id/myspace_about"
         android:textSize="20sp"
-        android:textColor="@color/pureBlack"
+        android:textColor="@color/colorPureBlack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="12dp"

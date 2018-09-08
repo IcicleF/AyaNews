@@ -48,6 +48,15 @@ public class MySpaceFragment extends Fragment {
                 }
             });
 
+            TextView tvPrefs = (TextView) view.findViewById(R.id.myspace_preferences);
+            tvPrefs.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mainAc, PreferencesActivity.class);
+                    startActivity(intent);
+                }
+            });
+
             TextView tvAbout = (TextView) view.findViewById(R.id.myspace_about);
             tvAbout.setOnClickListener(new View.OnClickListener() {
                 @Override

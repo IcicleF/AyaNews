@@ -3,9 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="pureBlack">#000000</color>
 
-    <color name="Aoi">#00FFFF</color>
-    <color name="pureRed">#FF0000</color>
+    <color name="colorAoi">#00FFFF</color>
+    <color name="colorPureBlack">#000000</color>
+    <color name="colorPureWhite">#FFFFFF</color>
+    <color name="colorPureRed">#FF0000</color>
+
     <color name="colorBorder">#CCCBD0</color>
+    <color name="colorRead">#E8EBED</color>
 </resources>

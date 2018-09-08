@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,26 +44,26 @@ public class NewsListFragment extends Fragment {
     /*
      * Three datasets.
      *
-     * Relationship:  frShownData <= frFilteredData <= frData
+     * Relationship:  mShownData <= mFilteredData <= mData
      * Description:
-     *     frData:          Complete dataset. Remains unchanged until fetchData.
-     *     frFilteredData:  Result subset by filtering frData with currentFilter.
-     *     frShownData:     Displayed subset of frFilteredData by loadMoreData (called by user).
+     *     mData:          Complete dataset. Remains unchanged until fetchData.
+     *     mFilteredData:  Result subset by filtering mData with currentFilter.
+     *     mShownData:     Displayed subset of mFilteredData by loadMoreData (called by user).
      */
-    private List<AyaNewsEntry> frData;
-    private List<AyaNewsEntry> frFilteredData = new LinkedList<AyaNewsEntry>();
-    private List<AyaNewsEntry> frShownData = new LinkedList<AyaNewsEntry>();
+    private List<AyaNewsEntry> mData;
+    private List<AyaNewsEntry> mFilteredData = new LinkedList<AyaNewsEntry>();
+    private List<AyaNewsEntry> mShownData = new LinkedList<AyaNewsEntry>();
     private int loadedItems = 0;
 
-    private SearchView frSearcher;
-    protected SmartRefreshLayout frSwipeRefresher;
-    private RecyclerView frNewsList;
-    private AyaNewsListAdapter frAdapter;
+    private SearchView mSearcher;
+    protected SmartRefreshLayout mSwipeRefresher;
+    private RecyclerView mNewsList;
+    private AyaNewsListAdapter mAdapter;
 
     private OnItemClickListener mClickListener = new AyaNewsItemClickListener();
 
     public NewsListFragment() {
-        frData = AyaEnvironment.entryList;
+        mData = AyaEnvironment.entryList;
     }
 
     class AyaNewsListAdapter extends RecyclerView.Adapter<AyaNewsListAdapter.AyaRVHolder> {
@@ -89,14 +91,14 @@ public class NewsListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull AyaNewsListAdapter.AyaRVHolder holder, int i) {
-            AyaNewsEntry entry = frShownData.get(i);
+            AyaNewsEntry entry = mShownData.get(i);
             holder.bind(entry);
-            holder.itemView.setTag(entry);
+            holder.itemView.setTag(new Pair<>(i, entry));
         }
 
         @Override
         public int getItemCount() {
-            return frShownData.size();
+            return mShownData.size();
         }
 
         class AyaRVHolder extends RecyclerView.ViewHolder {
@@ -110,6 +112,8 @@ public class NewsListFragment extends Fragment {
                 ((TextView) view.findViewById(R.id.news_item_title)).setText(entry.title);
                 ((TextView) view.findViewById(R.id.news_item_pubDate)).setText(entry.pubDate);
                 ((TextView) view.findViewById(R.id.news_item_source)).setText(entry.source);
+
+                view.setBackgroundResource(entry.views > 0 ? R.color.colorRead : R.color.colorPureWhite);
             }
         }
     }
@@ -117,10 +121,12 @@ public class NewsListFragment extends Fragment {
     class AyaNewsItemClickListener implements OnItemClickListener {
         @Override
         public void onItemClick(View view) {
-            Object tag = view.getTag();
-            if (tag == null || !(tag instanceof AyaNewsEntry))
+            if (view.getTag() == null)
                 return;
-            AyaNewsEntry entry = (AyaNewsEntry) tag;
+            Pair<Integer, AyaNewsEntry> tag = (Pair<Integer, AyaNewsEntry>)(view.getTag());
+            AyaNewsEntry entry = tag.second;
+            AyaEnvironment.setViewed(entry);
+            mAdapter.notifyItemChanged(tag.first);
 
             Intent intent = new Intent(mainAc, ShowHTMLActivity.class);
             intent.putExtra("uid", entry.uid);
@@ -130,11 +136,7 @@ public class NewsListFragment extends Fragment {
 
         @Override
         public void onItemLongClick(View view) {
-            Object tag = view.getTag();
-            if (tag == null || !(tag instanceof AyaNewsEntry))
-                return;
-            AyaNewsEntry entry = (AyaNewsEntry) tag;
-            Toast.makeText(mainAc, "Long click: " + entry.uid, Toast.LENGTH_SHORT).show();
+            return;
         }
     }
 
@@ -150,34 +152,34 @@ public class NewsListFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         if (view == null) {
             view = inflater.inflate(R.layout.news_list, container, false);
-            frSwipeRefresher = (SmartRefreshLayout) view.findViewById(R.id.news_list_swipe_refresh);
-            frSwipeRefresher.setOnRefreshListener(new OnRefreshListener() {
+            mSwipeRefresher = (SmartRefreshLayout) view.findViewById(R.id.news_list_swipe_refresh);
+            mSwipeRefresher.setOnRefreshListener(new OnRefreshListener() {
                 @Override
                 public void onRefresh(RefreshLayout refreshLayout) {
                     mainAc.refetchRSS(false);
                 }
             });
-            frSwipeRefresher.setOnLoadMoreListener(new OnLoadMoreListener() {
+            mSwipeRefresher.setOnLoadMoreListener(new OnLoadMoreListener() {
                 @Override
                 public void onLoadMore(RefreshLayout refreshLayout) {
                     NewsListFragment.this.loadMoreData();
                 }
             });
-            frSwipeRefresher.setRefreshHeader(new MaterialHeader(getContext())
+            mSwipeRefresher.setRefreshHeader(new MaterialHeader(getContext())
                     .setColorSchemeColors(
                             0xFF000000 + getResources().getColor(R.color.colorPrimary)
                     ));
-            frSwipeRefresher.setRefreshFooter(new ClassicsFooter(getContext())
+            mSwipeRefresher.setRefreshFooter(new ClassicsFooter(getContext())
                     .setSpinnerStyle(SpinnerStyle.Scale)
                     .setAccentColorId(R.color.colorPrimary));
 
-            frNewsList = (RecyclerView) view.findViewById(R.id.news_list);
-            frNewsList.setAdapter(frAdapter = new AyaNewsListAdapter());
-            frNewsList.setLayoutManager(new LinearLayoutManager(getActivity()));
-            frNewsList.addItemDecoration(new AyaDividerItemDecoration(container.getContext()));
+            mNewsList = (RecyclerView) view.findViewById(R.id.news_list);
+            mNewsList.setAdapter(mAdapter = new AyaNewsListAdapter());
+            mNewsList.setLayoutManager(new LinearLayoutManager(getActivity()));
+            mNewsList.addItemDecoration(new AyaDividerItemDecoration(container.getContext()));
 
-            frSearcher = (SearchView) view.findViewById(R.id.news_list_search);
-            frSearcher.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            mSearcher = (SearchView) view.findViewById(R.id.news_list_search);
+            mSearcher.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -191,15 +193,14 @@ public class NewsListFragment extends Fragment {
                     return false;
                 }
             });
-            frSearcher.clearFocus();
+            mSearcher.clearFocus();
 
             this.startDatasetRenewal();
         }
         else {
             ViewGroup parent = (ViewGroup) view.getParent();
-            if (null != parent) {
+            if (null != parent)
                 parent.removeView(view);
-            }
         }
         return view;
     }
@@ -227,11 +228,11 @@ public class NewsListFragment extends Fragment {
 
     private void setFilter(String filter) {
         currentFilter = filter.toLowerCase();
-        frFilteredData.clear();
+        mFilteredData.clear();
 
-        for (AyaNewsEntry entry : frData)
+        for (AyaNewsEntry entry : mData)
             if (isFiltered(entry))
-                frFilteredData.add(entry);
+                mFilteredData.add(entry);
 
         reloadList();
     }
@@ -247,76 +248,75 @@ public class NewsListFragment extends Fragment {
     }
 
     public void renewDataset(List<AyaNewsEntry> dataset) {
-        frData.clear();
+        mData.clear();
         if (dataset != null)
-            frData.addAll(dataset);
+            mData.addAll(dataset);
         setFilter(currentFilter);
     }
 
     private void reloadList() {
         loadedItems = 0;
-        frShownData.clear();
-        frSwipeRefresher.setNoMoreData(false);
+        mShownData.clear();
+        mSwipeRefresher.setNoMoreData(false);
         loadMoreData();
     }
 
     public void fetchData(List<AyaNewsEntry> dataset) {
-        if (frData.isEmpty()) {
+        if (mData.isEmpty()) {
             renewDataset(dataset);
-            if (frSwipeRefresher.getState() == RefreshState.Refreshing)
-                frSwipeRefresher.finishRefresh(REFRESH_DELAY_TIME);
+            if (mSwipeRefresher.getState() == RefreshState.Refreshing)
+                mSwipeRefresher.finishRefresh(REFRESH_DELAY_TIME);
             return;
         }
         if (dataset != null) {
-            int n = dataset.size();
             int counter = 0;
-            for (int i = n - 1; i >= 0; --i) {
-                AyaNewsEntry entry = dataset.get(i);
+            for (AyaNewsEntry entry : dataset) {
                 boolean flag = true;
-                for (AyaNewsEntry existed : frData)
+                for (AyaNewsEntry existed : mData)
                     if (entry.uid.equals(existed.uid)) {
                         flag = false;
                         break;
                     }
                 if (flag) {
-                    frData.add(0, entry);
+                    mData.add(entry);
                     ++counter;
                 }
             }
         }
+        Collections.sort(mData);
         setFilter(currentFilter);
-        if (frSwipeRefresher.getState() == RefreshState.Refreshing)
-            frSwipeRefresher.finishRefresh(0);
+        if (mSwipeRefresher.getState() == RefreshState.Refreshing)
+            mSwipeRefresher.finishRefresh(0);
     }
 
     /*
      * Load items from FILTERED dataset.
      */
     private void loadMoreData() {
-        Log.d("ayaDeb", "NewsList.loadMoreData: " + loadedItems + " " + frFilteredData.size());
-        if (frFilteredData.size() > 0 && loadedItems == frFilteredData.size()) {
-            frSwipeRefresher.finishLoadMore(0, true, true);
+        Log.d("ayaDeb", "NewsList.loadMoreData: " + loadedItems + " " + mFilteredData.size());
+        if (mFilteredData.size() > 0 && loadedItems == mFilteredData.size()) {
+            mSwipeRefresher.finishLoadMore(0, true, true);
             return;
         }
-        else if (frFilteredData.size() == 0) {
-            if (frData.size() == 0)
-                frSwipeRefresher.finishLoadMore(0);
+        else if (mFilteredData.size() == 0) {
+            if (mData.size() == 0)
+                mSwipeRefresher.finishLoadMore(0);
             else {
-                frShownData.clear();
-                frAdapter.notifyDataSetChanged();
+                mShownData.clear();
+                mAdapter.notifyDataSetChanged();
             }
             return;
         }
-        int remainingItems = frFilteredData.size() - loadedItems;
+        int remainingItems = mFilteredData.size() - loadedItems;
         if (remainingItems > LOAD_MORE_THRESHOLD)
             remainingItems = LOAD_MORE_THRESHOLD;
 
         for (int i = loadedItems; i < loadedItems + remainingItems; ++i)
-            frShownData.add(frFilteredData.get(i));
+            mShownData.add(mFilteredData.get(i));
         loadedItems += remainingItems;
 
-        frAdapter.notifyDataSetChanged();
-        if (frSwipeRefresher.getState() == RefreshState.Loading)
-            frSwipeRefresher.finishLoadMore(REFRESH_DELAY_TIME);
+        mAdapter.notifyDataSetChanged();
+        if (mSwipeRefresher.getState() == RefreshState.Loading)
+            mSwipeRefresher.finishLoadMore(REFRESH_DELAY_TIME);
     }
 }

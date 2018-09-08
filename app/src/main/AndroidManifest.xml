@@ -27,6 +27,7 @@
         <activity android:name=".AboutActivity" />
         <activity android:name=".RSSListActivity" />
         <activity android:name=".FavoriteListActivity" />
+        <activity android:name=".PreferencesActivity"></activity>
     </application>
 
 </manifest>

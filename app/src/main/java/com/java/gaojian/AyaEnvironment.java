@@ -170,6 +170,9 @@ public class AyaEnvironment {
                             entry.url = parser.getAttributeValue(null, "url");
                             entry.source = parser.getAttributeValue(null, "source");
 
+                            String viewsStr = parser.getAttributeValue(null, "views");
+                            entry.views = Integer.parseInt(viewsStr);
+
                             entryList.add(entry);
                         }
                         break;
@@ -210,6 +213,7 @@ public class AyaEnvironment {
                 entryNode.setAttribute("pubDate", entry.pubDate);
                 entryNode.setAttribute("url", entry.url);
                 entryNode.setAttribute("source", entry.source);
+                entryNode.setAttribute("views", "" + entry.views);
                 root.appendChild(entryNode);
             }
             doc.appendChild(root);
@@ -282,6 +286,12 @@ public class AyaEnvironment {
             return true;
         }
         return false;
+    }
+
+    protected static void setViewed(AyaNewsEntry entry) {
+        for (AyaNewsEntry existed : entryList)
+            if (existed.uid.equals(entry.uid))
+                ++existed.views;
     }
 
     @Nullable

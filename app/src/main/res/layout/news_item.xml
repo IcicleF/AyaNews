@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:textColor="@color/pureBlack"
+        android:textColor="@color/colorPureBlack"
         android:gravity="center_vertical" />
 
     <LinearLayout

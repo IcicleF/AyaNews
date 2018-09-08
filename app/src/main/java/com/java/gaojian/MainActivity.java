@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private LoadingIndicator loadingIndicator;
 
     private NewsListFragment homeFrag;
-    private PlaceholderFragment recommendFrag;
-    private MySpaceFragment preferencesFrag;
+    private RecommendListFragment recommendFrag;
+    private MySpaceFragment mySpaceFrag;
 
     private ViewPager mViewPager;
     private BottomNavigationView mNavigation;
@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
             }
             if ((opcode & DISMISS_LOADING_INDICATOR) != 0) {
                 loadingIndicator.dismiss();
-                if (homeFrag.frSwipeRefresher.getState() == RefreshState.Refreshing)
-                    homeFrag.frSwipeRefresher.finishRefresh(0);
+                if (homeFrag.mSwipeRefresher.getState() == RefreshState.Refreshing)
+                    homeFrag.mSwipeRefresher.finishRefresh(0);
                 opcode = opcode & ~DISMISS_LOADING_INDICATOR;
             }
             if ((opcode & SHOW_MESSAGE) != 0) {
@@ -126,8 +126,8 @@ public class MainActivity extends AppCompatActivity {
 
                 homeFrag.fetchData(null);
                 loadingIndicator.dismiss();
-                if (homeFrag.frSwipeRefresher.getState() == RefreshState.Refreshing)
-                    homeFrag.frSwipeRefresher.finishRefresh(0);
+                if (homeFrag.mSwipeRefresher.getState() == RefreshState.Refreshing)
+                    homeFrag.mSwipeRefresher.finishRefresh(0);
 
                 return;
             }
@@ -170,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                                     isInItem = true;
                                     entry = new AyaNewsEntry();
                                     entry.source = rss.name;
+                                    entry.views = 0;
                                 }
                                 else if (isInItem) {
                                     if (name.equals("title")) {
@@ -241,6 +242,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onPageSelected(int position) {
             mNavigation.setSelectedItemId(mNavigation.getMenu().getItem(position).getItemId());
+            if (position == 1)
+                recommendFrag.reloadList();
         }
     }
 
@@ -264,12 +267,13 @@ public class MainActivity extends AppCompatActivity {
         mFragManager = getSupportFragmentManager();
 
         mFragList.add(homeFrag = new NewsListFragment());
-        mFragList.add(recommendFrag = new PlaceholderFragment());
-        mFragList.add(preferencesFrag = new MySpaceFragment());
+        mFragList.add(recommendFrag = new RecommendListFragment());
+        mFragList.add(mySpaceFrag = new MySpaceFragment());
         mViewPagerAdapter = new ViewPagerFragmentAdapter(mFragManager, mFragList);
 
         homeFrag.setMainActivity(this);
-        preferencesFrag.setMainActivity(this);
+        recommendFrag.setMainActivity(this);
+        mySpaceFrag.setMainActivity(this);
 
         mViewPager.addOnPageChangeListener(new ViewPagetOnPagerChangedLisenter());
         mViewPager.setAdapter(mViewPagerAdapter);
