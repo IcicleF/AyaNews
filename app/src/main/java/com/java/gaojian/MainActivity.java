@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                 message.what = SHOW_MESSAGE | DISMISS_LOADING_INDICATOR;
                 message.obj = getResources().getString(R.string.err_rss_failure);
                 handler.sendMessage(message);
-                return;
+                //return;
             }
             handler.sendEmptyMessage(REFRESH_LIST | DISMISS_LOADING_INDICATOR);
         }
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
         public void onPageSelected(int position) {
             mNavigation.setSelectedItemId(mNavigation.getMenu().getItem(position).getItemId());
             if (position == 1)
-                recommendFrag.reloadList();
+                recommendFrag.startRefreshList();
         }
     }
 

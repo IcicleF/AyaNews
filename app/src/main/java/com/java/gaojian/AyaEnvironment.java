@@ -33,18 +33,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 public class AyaEnvironment {
-    protected static boolean isNetworkConnected(Context context) {
-        if (context != null) {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (cm == null)
-                return false;
-            NetworkInfo ni = cm.getActiveNetworkInfo();
-            if (ni != null) {
-                return ni.isAvailable();
-            }
-        }
-        return false;
-    }
+
+    protected static boolean toClearWebViewCache = false;
 
     protected static SharedPreferences prefs;
     protected static SharedPreferences.Editor prefs_editor;
@@ -60,6 +50,19 @@ public class AyaEnvironment {
     protected static List<RssFeed> rssFeedList = new ArrayList<>();
     protected static List<AyaNewsEntry> entryList = new LinkedList<>();
     protected static Set<String> favSet = new TreeSet<>();
+
+    protected static boolean isNetworkConnected(Context context) {
+        if (context != null) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm == null)
+                return false;
+            NetworkInfo ni = cm.getActiveNetworkInfo();
+            if (ni != null) {
+                return ni.isAvailable();
+            }
+        }
+        return false;
+    }
 
     /*
      * Must be called ONLY ONCE at the VERY BEGINNING.

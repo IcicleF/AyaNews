@@ -33,6 +33,10 @@ public class RecommendListFragment extends Fragment {
 
     public static final int ITEM_COUNT = 10;
 
+    public static final double NOT_VIEWED_WEIGHT = 3.0f;
+    public static final double CATEGORY_WEIGHT = 0.5f;
+    public static final double RANDOM_WEIGHT = 5.0f;
+
     private MainActivity mainAc;
 
     private List<AyaNewsEntry> mData = new ArrayList<>();
@@ -187,9 +191,12 @@ public class RecommendListFragment extends Fragment {
         }
     };
 
-    public void reloadList() {
+    public void startRefreshList() {
         if (mSwipeRefresher.getState() != RefreshState.Refreshing)
             mSwipeRefresher.autoRefresh(0);
+    }
+
+    public void reloadList() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -209,10 +216,10 @@ public class RecommendListFragment extends Fragment {
                     double weight = 0f;
 
                     if (entry.views == 0)
-                        weight += 1.5f;
+                        weight += NOT_VIEWED_WEIGHT;
                     if (rMap.get(key) > 0)
-                        weight += Math.log(rMap.get(key));
-                    weight += Math.random() * 2f;
+                        weight += Math.log10(rMap.get(key)) * CATEGORY_WEIGHT;
+                    weight += Math.random() * RANDOM_WEIGHT;
 
                     AyaRecomEntry rEntry = new AyaRecomEntry();
                     rEntry.weight = weight;

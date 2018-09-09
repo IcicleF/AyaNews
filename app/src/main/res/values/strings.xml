@@ -8,13 +8,15 @@
     <string name="title_myspace">My Space</string>
 
     <string name="title_favorites">Favorites</string>
-    <string name="title_preferences">Preferences</string>
+    <string name="title_preferences">Settings</string>
     <string name="title_channels">News Channels</string>
     <string name="title_about">About Me</string>
-    <string name="title_clear_news_cache">Clear Cached News Entries</string>
+
     <string name="title_clear_webview_cache">Clear Cached Pages</string>
+    <string name="title_clear_view_count">Clear View History</string>
 
     <string name="title_open_browser">Open with browser</string>
+    <string name="title_share_gist">Share gist</string>
     <string name="title_share">Share content</string>
     <string name="title_add_to_favorites">Add to favorites</string>
     <string name="title_remove_from_favorites">Remove from favorites</string>
@@ -22,6 +24,13 @@
     <string name="title_channel_on">ON</string>
     <string name="title_channel_off">OFF</string>
     <string name="channel_domestic">Domestic</string>
+
+    <string name="dlg_ask_clear_cache">Do you wish to clear cache?</string>
+    <string name="dlg_ask_clear_view_count">Do you wish to clear view history?</string>
+    <string name="dlg_cache_cleared">Cache will be cleared</string>
+    <string name="dlg_view_count_cleared">View history cleared</string>
+    <string name="dlg_yes">Yes</string>
+    <string name="dlg_no">No</string>
 
     <string name="about_text">哎呀~\n\n和堇子小姐聊过之后\n觉得智能手机真是好东西呢！\n\n虽然似乎是很脆弱的器械\n但是据说存在着名为互联网\n比天狗的情报网还要强上数倍的便利机能\n\n用智能手机来拓展文文新闻的业务\n天大的好主意呢！\n\n啊不过\n因为这种器械都是外面的人在用\n所以幻想乡的新闻不能写在上面呢\n\n虽然感觉这样就失掉了什么关键的东西\n但果然是宣传文文的金字招牌更重要吧！</string>
     <string name="about_project">Project AyaNews</string>
@@ -48,7 +57,4 @@
 
     <string name="path_news_list">cached_list.xml</string>
     <string name="path_fav_list">favorites.xml</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

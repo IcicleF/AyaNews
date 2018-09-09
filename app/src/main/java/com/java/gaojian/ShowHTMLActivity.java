@@ -4,14 +4,21 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -31,6 +38,7 @@ import java.io.IOException;
 public class ShowHTMLActivity extends AppCompatActivity {
 
     public static final int MAX_TRIES = 100;
+    public static final int TEXT_BUBBLE_HEIGHT = 300;
 
     private String url = "https://en.touhouwiki.net/wiki/Aya_Shameimaru";  //"my" page :)
 
@@ -43,6 +51,9 @@ public class ShowHTMLActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP)
+            WebView.enableSlowWholeDocumentDraw();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_html);
 
@@ -59,11 +70,17 @@ public class ShowHTMLActivity extends AppCompatActivity {
         //Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
 
         loadingIndicator = LoadingIndicator.buildInst(this);
-        loadingIndicator.show();
+        //loadingIndicator.show();
 
         mWebView = (WebView) findViewById(R.id.web_view_showhtml);
         mWebView.setWebViewClient(webViewClient);
-        //mWebView.clearCache(true);
+        if (AyaEnvironment.toClearWebViewCache) {
+            mWebView.clearCache(true);
+            mWebView.clearFormData();
+            mWebView.clearHistory();
+
+            AyaEnvironment.toClearWebViewCache = false;
+        }
 
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -91,16 +108,33 @@ public class ShowHTMLActivity extends AppCompatActivity {
         @Override
         public void onPageFinished(WebView view, String url) {
             if (entry.source.contains("Tencent")) {
-                String js = "javascript:function fucktencent(){var bar1=document.getElementsByClassName('jsx-129655388 contentbar');for(var i=0;i<bar1.length;++i){bar1[i].remove();}var bar2=document.getElementsByClassName('nfooter-nav  comm');for(var i=0;i<bar2.length;++i){bar2[i].remove();}}";
+                String js =
+                        "javascript:function fucktencent(){" +
+                                "var bar1=document.getElementsByClassName('jsx-129655388 contentbar');" +
+                                "for(var i=0;i<bar1.length;++i){bar1[i].remove();}" +
+                                "var bar2=document.getElementsByClassName('nfooter-nav  comm');" +
+                                "for(var i=0;i<bar2.length;++i){bar2[i].remove();}" +
+                                "}";
                 view.loadUrl(js);
                 view.loadUrl("javascript:fucktencent();");
             }
             else {
-                String js = "javascript:function fucksina(){var bar1=document.getElementsByClassName('fl_words rf j_cmnt_bottom');for(var i=0;i<bar1.length;++i){bar1[i].remove();}var bar2=document.getElementsByClassName('specSlide2Wrap');for(var i=0;i<bar2.length;++i){bar2[i].remove();}}";
+                String js =
+                        "javascript:function fucksina(){" +
+                                "var bar1=document.getElementsByClassName('fl_words rf j_cmnt_bottom');" +
+                                "for(var i=0;i<bar1.length;++i){bar1[i].remove();}" +
+                                "var bar2=document.getElementsByClassName('specSlide2Wrap');" +
+                                "for(var i=0;i<bar2.length;++i){bar2[i].remove();}" +
+                                "var bar3=document.getElementsByClassName('s_card j_article_relevent j_wbrecommend_wrap');" +
+                                "for(var i=0;i<bar3.length;++i){bar3[i].remove();}" +
+                                "var bar4=document.getElementsByClassName('s_card j_cmt_wrap z_c2');" +
+                                "for(var i=0;i<bar4.length;++i){bar4[i].remove();}" +
+                                "var bar5=document.getElementsByClassName('s_card j_article_relevent_news z_c2');" +
+                                "for(var i=0;i<bar5.length;++i){bar5[i].remove();}" +
+                                "}";
                 view.loadUrl(js);
                 view.loadUrl("javascript:fucksina();");
             }
-
             loadingIndicator.dismiss();
             if (mSwipeRefresher.getState() == RefreshState.Refreshing)
                 mSwipeRefresher.finishRefresh(0);
@@ -116,6 +150,12 @@ public class ShowHTMLActivity extends AppCompatActivity {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
             return false;
+        }
+
+        @Nullable
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            return super.shouldInterceptRequest(view, request);
         }
 
         @Override
@@ -140,6 +180,7 @@ public class ShowHTMLActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
+        menu.add(R.string.title_share_gist);
         menu.add(R.string.title_open_browser);
         menu.add(R.string.title_share);
         if (isCalledFromFavoirtes)
@@ -153,7 +194,13 @@ public class ShowHTMLActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         String title = item.getTitle().toString();
-        if (title.equals(getResources().getString(R.string.title_open_browser))) {
+        if (title.equals(getResources().getString(R.string.title_share_gist))) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_TEXT, entry.getGist());
+            startActivity(Intent.createChooser(intent, getResources().getString(R.string.title_share_gist)));
+        }
+        else if (title.equals(getResources().getString(R.string.title_open_browser))) {
             Uri uri = Uri.parse(entry.url);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             if (intent.resolveActivity(getPackageManager()) != null)
@@ -178,16 +225,17 @@ public class ShowHTMLActivity extends AppCompatActivity {
                             0,
                             View.MeasureSpec.UNSPECIFIED
                     ));
-            mWebView.layout(0, 0, mWebView.getMeasuredWidth(), mWebView.getMeasuredHeight());
+            int pageW = mWebView.getMeasuredWidth(), pageH = mWebView.getMeasuredHeight();
+
+            mWebView.layout(0, 0, pageW, pageH);
             mWebView.setDrawingCacheEnabled(true);
             mWebView.buildDrawingCache();
 
-            Bitmap longImage = Bitmap.createBitmap(mWebView.getMeasuredWidth(),
-                    mWebView.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+            Bitmap longImage = Bitmap.createBitmap(pageW, pageH, Bitmap.Config.ARGB_8888);
 
             Canvas canvas = new Canvas(longImage);
             Paint paint = new Paint();
-            canvas.drawBitmap(longImage, 0, mWebView.getMeasuredHeight(), paint);
+            canvas.drawBitmap(longImage, 0, pageH, paint);
             mWebView.draw(canvas);
 
             String galleryPath = Environment.getExternalStorageDirectory()
@@ -220,7 +268,11 @@ public class ShowHTMLActivity extends AppCompatActivity {
 
                     MediaStore.Images.Media.insertImage(this.getContentResolver(),
                             longImage, filePath, null);
-                    Uri uri = Uri.fromFile(file);
+                    Uri uri;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                        uri = FileProvider.getUriForFile(this, "com.java.gaojian.fileprovider", file);
+                    else
+                        uri = Uri.fromFile(file);
 
                     Intent updateAlbumIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                     updateAlbumIntent.setData(uri);

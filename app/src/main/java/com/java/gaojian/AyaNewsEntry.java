@@ -44,8 +44,9 @@ class AyaNewsEntry implements Comparable<AyaNewsEntry> {
             url = url.substring(url.indexOf('=') + 1);
 
             Matcher m = sinaPattern.matcher(url);
-            if (m.find())
+            if (m.find()) {
                 uid = "s" + m.group(1).replace("=", "") + m.group(2);
+            }
         }
         else {
             url = "INVALID";
@@ -89,5 +90,13 @@ class AyaNewsEntry implements Comparable<AyaNewsEntry> {
         if (words.length != 3)
             return null;
         return words[1];
+    }
+
+    public String getGist() {
+        return "(From AyaNews Android Client) "
+                + "\n"
+                + "【" + title + "】"
+                + desc
+                + "（" + url + "）";
     }
 }

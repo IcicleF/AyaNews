@@ -271,6 +271,8 @@ public class NewsListFragment extends Fragment {
         if (dataset != null) {
             int counter = 0;
             for (AyaNewsEntry entry : dataset) {
+                if (entry == null || entry.uid == null)
+                    continue;
                 boolean flag = true;
                 for (AyaNewsEntry existed : mData)
                     if (entry.uid.equals(existed.uid)) {
